@@ -1,0 +1,284 @@
+*{
+    color: white;
+    margin: 0;
+    font-family: 'Open Sans';
+    
+}
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+.wrapper{
+    overflow:   scroll;
+    background-color: black;
+
+
+}
+.container1{
+   background-color: black;
+   margin-bottom: 180px;
+   height: inherit;
+   position: relative;
+}
+.text{
+    padding: 0;
+    position: absolute;
+    margin-left: 40em;
+    margin-top: -36em;
+    width: auto;
+}
+.text h1{
+    font-size: 7em;
+}
+.text p{
+    font-weight: 100;
+}
+.text button{
+    font-family: Nunito;
+    color: black;
+    padding: 10px;
+    width: 10em;
+    border-radius: 6px;
+    border: none;
+    background-color:#ffa31a;
+}
+.text button:hover{
+    background-color:#727272;
+    color: white
+}
+span.name{
+    color: 	#ffa31a;
+}
+.text p{
+    font-family: Nunito;
+}
+.container2{
+    background-color: black;
+    height: inherit;
+    display: flex;
+    margin-bottom: 180px;
+ }
+
+.orange{
+    position: absolute;
+    background-color: #ffa31a;
+    width: 355px;
+    height: 589px;
+    margin-left: -50px;
+    margin-top: -50px;
+ }
+.container2 img{
+    position: relative;
+    width: 490px;
+    height: 490px;
+    opacity: 0.3;
+}
+.container2 img:hover{
+    filter: grayscale(600%);
+    
+    opacity: 5;
+}
+.col1{
+    margin-left: 200px;
+
+}
+.col2{
+    font-weight: 100;
+    width: 360px;
+    margin: 0 auto 0 50px;
+}
+.col2 p{
+    font-family: Nunito;
+}
+.txtwrap{
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+.txt1{
+    width: 360px; 
+    font-weight: bold;
+}
+.txt2{
+    width: 360px;
+
+}
+.icons{
+    width: 500px;
+    height: 50px;
+}
+.icons i{
+    margin-left: 1px;
+    padding-left: 50px;
+}
+.container3{
+    background-color: black;
+    height: inherit;
+    margin-bottom: 100px;
+    text-align: center;
+    width: auto;
+ }
+.container3 h1{
+    font-size: 5em;
+ }
+.line{
+    margin: 10px auto;
+    width: 200px;
+    border-bottom: 1px solid #ffa31a;
+}
+.do{
+    color: #ffa31a;
+ }
+
+.boxwrap{
+    width: auto;
+    justify-content: space-evenly;
+    display: flex;
+    margin: 90px 50px 0 50px;
+
+ }
+.box1{
+    width: 400px;
+    height: 600px;
+    background-color: #727272;
+ }
+ .desc{
+    margin-top: 100px;
+ }
+.box1:hover{
+    background-color: #ffa31a;
+}
+.box2:hover{
+    background-color: #ffa31a;
+}
+.box3:hover{
+    background-color: #ffa31a;
+}
+.box2{
+    width: 400px;
+    height: 600px;
+    background-color: #727272;
+ }
+.box3{
+    width: 400px;
+    height: 600px;
+    background-color: #727272;
+ }
+.container4{
+    background-color: black;
+    height: inherit;
+    width: auto;
+    text-align: center;
+    margin-bottom: 100px;
+ }
+.container4 h1{
+    font-size: 5em;
+}
+.projectwrapper{
+    display: inline-block;
+    width: auto;
+    height: inherit;
+
+    margin: 0 auto;
+    
+}
+.proj1{
+    background-color: black;
+    width: 1000px;
+    height: inherit;
+ 
+
+}
+.proj1 img{
+    height: 270px;    
+    float: left;
+    width: 500px;
+    
+}
+.title{
+    display: inline-block;
+    margin-left: 20px;
+    text-align: left;
+}
+.proj1 button{
+    width: 20em;
+    background-color: #ffa31a;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+
+}
+.proj2 button{
+    width: 20em;
+    background-color: #ffa31a;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+
+}
+.proj1 button:hover{
+    background-color:#727272;
+    color: white;
+}
+.proj2 button:hover{
+    background-color:#727272;
+    color: white;
+}
+.proj2 img{
+    float: left;
+    width: 500px;
+    height: 270px;
+}
+.proj2{
+    width: 1000px;
+    background-color: black;
+    height: inherit;
+
+}
+.container5{
+    background-color: black;
+    height: inherit;
+    text-align: center;
+    margin: 0 auto;
+    height: inherit;   
+ }
+ .container5 h1{
+     font-size: 5em;
+ }
+.form{
+    justify-content: space-between;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    width: 700px;
+
+}
+.width{
+    border: 1px solid #ffa31a;
+    width: 192px;
+    height: 70px;
+    padding-left: 25px;
+    margin-bottom: 25px;
+    background-color: black;
+}
+.last{
+    border: 1px solid #ffa31a;
+    flex-grow: 3;
+    height: 70px;
+    padding-left: 25px;
+    background-color: black;
+}
+.container5 button{
+     width: 20em;
+    background-color: #ffa31a;
+    color: white;
+    padding: 20px;
+    border-radius: 6px;
+    border: none;
+}
+.container5 button:hover{
+    background-color:#727272;
+    color: white;
+}
