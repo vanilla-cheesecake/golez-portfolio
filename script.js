@@ -1,7 +1,14 @@
 const typedTextSpan = document.querySelector(".typed-text");
 const cursorSpan = document.querySelector(".cursor");
 
-const textArray = ["I Love to code", "I Love to develop", "I love to learn new technologies", "I love to solve problems", "I love to collaborate with other developers"];
+const textArray = [
+  "I am passionate about software development and creating innovative solutions.",
+  "I enjoy configuring Linux servers and optimizing their performance.",
+  "I am constantly learning new technologies and staying up-to-date with the latest trends in IT.",
+  "I thrive on solving complex problems and finding elegant solutions.",
+  "I value collaboration and enjoy working with other developers to achieve common goals."
+];
+
 const typingDelay = 10;
 const erasingDelay = 10;
 const newTextDelay = 900; // Delay between current and next text
