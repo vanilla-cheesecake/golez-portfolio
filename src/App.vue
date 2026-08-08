@@ -369,7 +369,7 @@ onMounted(() => {
             </div>
 
             <figure class="hero-banner">
-              <img src="/img/banner.png" width="1413" height="766" alt="Lloyd Golez playing guitar" loading="lazy"
+              <img src="/img/banner.avif" width="1413" height="766" alt="Lloyd Golez playing guitar" loading="lazy"
                 decoding="async" />
             </figure>
           </section>
