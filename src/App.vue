@@ -4,7 +4,7 @@ import { SOCIAL_ICONS, TECH_ICONS } from './tech-icons.js'
 
 const activeView = ref('overview')
 const sidebarOpen = ref(false)
-const darkMode = ref(false)
+const darkMode = ref(true)
 
 const navItems = [
   { id: 'overview', label: 'Overview', icon: 'grid' },
@@ -303,7 +303,8 @@ function toggleTheme() {
 }
 
 onMounted(() => {
-  darkMode.value = localStorage.getItem('portfolio-theme') === 'dark'
+  const savedTheme = localStorage.getItem('portfolio-theme')
+  if (savedTheme) darkMode.value = savedTheme === 'dark'
   loadContributions()
   loadVisitorAnalytics()
 })
