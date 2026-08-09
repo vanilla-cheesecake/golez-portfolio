@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://golez.netlify.app/sitemap.xml

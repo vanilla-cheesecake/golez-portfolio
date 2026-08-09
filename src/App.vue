@@ -1,17 +1,43 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { SOCIAL_ICONS, TECH_ICONS } from './tech-icons.js'
 
-const activeView = ref('overview')
+const route = useRoute()
+const router = useRouter()
+const activeView = ref(route.name || 'overview')
 const sidebarOpen = ref(false)
 const darkMode = ref(true)
 
 const navItems = [
-  { id: 'overview', label: 'Overview', icon: 'grid' },
-  { id: 'experience', label: 'Experience', icon: 'briefcase' },
-  { id: 'skills', label: 'Tech stack', icon: 'code' },
-  { id: 'about', label: 'About', icon: 'user' },
+  { id: 'overview', label: 'Overview', icon: 'grid', path: '/' },
+  { id: 'experience', label: 'Experience', icon: 'briefcase', path: '/experience' },
+  { id: 'skills', label: 'Tech stack', icon: 'code', path: '/tech-stack' },
+  { id: 'about', label: 'About', icon: 'user', path: '/about' },
 ]
+
+const seoByView = {
+  overview: {
+    title: 'Lloyd Golez | Software Engineer',
+    description:
+      'Portfolio of Lloyd Golez, a software engineer building web, mobile, desktop, database, and integration solutions.',
+  },
+  experience: {
+    title: 'Experience | Lloyd Golez, Software Engineer',
+    description:
+      'Professional software engineering experience across Laravel, accounting, HRIS, payroll, integrations, Android, desktop applications, and deployment.',
+  },
+  skills: {
+    title: 'Tech Stack | Lloyd Golez, Software Engineer',
+    description:
+      'Technologies used by Lloyd Golez, including Laravel, PHP, Vue.js, MySQL, SQL Server, Kotlin, C#, Linux, and API integrations.',
+  },
+  about: {
+    title: 'About | Lloyd Golez, Software Engineer',
+    description:
+      'Learn about Lloyd Golez and his end-to-end approach to building reliable business software.',
+  },
+}
 
 const githubUser = 'vanilla-cheesecake'
 
@@ -291,11 +317,32 @@ const viewTitle = computed(
   () => navItems.find((item) => item.id === activeView.value)?.label || 'Overview',
 )
 
-function selectView(id) {
-  activeView.value = id
+async function selectView(id) {
+  const item = navItems.find((navItem) => navItem.id === id)
+  if (item && route.path !== item.path) await router.push(item.path)
   sidebarOpen.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+function updateSeo(view) {
+  const seo = seoByView[view] || seoByView.overview
+  const canonical = `https://golez.netlify.app${route.path === '/' ? '/' : route.path}`
+
+  document.title = seo.title
+  document.querySelector('#meta-description')?.setAttribute('content', seo.description)
+  document.querySelector('#canonical-url')?.setAttribute('href', canonical)
+  document.querySelector('#og-title')?.setAttribute('content', seo.title)
+  document.querySelector('#og-url')?.setAttribute('content', canonical)
+}
+
+watch(
+  () => route.name,
+  (routeName) => {
+    activeView.value = routeName || 'overview'
+    updateSeo(activeView.value)
+  },
+  { immediate: true },
+)
 
 function toggleTheme() {
   darkMode.value = !darkMode.value
@@ -323,11 +370,12 @@ onMounted(() => {
 
       <p class="nav-label">SECTIONS</p>
       <nav>
-        <button
+        <a
           v-for="item in navItems"
           :key="item.id"
+          :href="item.path"
           :class="{ active: activeView === item.id }"
-          @click="selectView(item.id)"
+          @click.prevent="selectView(item.id)"
         >
           <svg v-if="item.icon === 'grid'" viewBox="0 0 24 24">
             <rect x="3" y="3" width="7" height="7" />
@@ -347,7 +395,7 @@ onMounted(() => {
             <path d="M4 21c.5-5 3-7 8-7s7.5 2 8 7" />
           </svg>
           <span>{{ item.label }}</span>
-        </button>
+        </a>
       </nav>
 
       <div class="sidebar-bottom">
@@ -412,8 +460,10 @@ onMounted(() => {
                 system integrations, and application deployment.
               </p>
               <div class="hero-actions">
-                <button @click="selectView('experience')">EXPERIENCE</button>
-                <button class="ghost" @click="selectView('skills')">TECH STACK</button>
+                <a href="/experience" @click.prevent="selectView('experience')">EXPERIENCE</a>
+                <a class="ghost" href="/tech-stack" @click.prevent="selectView('skills')"
+                  >TECH STACK</a
+                >
                 <a class="ghost" href="/file/golez_lloyd_cv.pdf" download="Lloyd-Golez-CV.pdf">
                   MY CV ↓
                 </a>
@@ -928,7 +978,7 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.sidebar nav button {
+.sidebar nav > a {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -942,12 +992,12 @@ onMounted(() => {
   text-align: left;
 }
 
-.sidebar nav button:hover {
+.sidebar nav > a:hover {
   color: var(--ink);
   background: var(--bg);
 }
 
-.sidebar nav button.active {
+.sidebar nav > a.active {
   color: var(--ink);
   background: var(--bg);
   border-left-color: var(--accent);
