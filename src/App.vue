@@ -60,6 +60,14 @@ const visitorAnalytics = ref({
 })
 const visitorAnalyticsState = ref('loading')
 
+// Only a handful of flags are vendored, and "XX" (unknown) has none by definition,
+// so any country without an SVG falls back to its ISO code.
+const missingFlags = ref(new Set())
+
+function handleFlagError(code) {
+  missingFlags.value = new Set(missingFlags.value).add(code)
+}
+
 const topVisitorCount = computed(() => visitorAnalytics.value.countries[0]?.visits || 1)
 let visitorCountTimer
 
@@ -729,11 +737,16 @@ onBeforeUnmount(() => {
                     <div class="country-meta">
                       <span class="country-flag">
                         <img
+                          v-if="!missingFlags.has(country.code)"
                           :src="`/flags/${country.code.toLowerCase()}.svg`"
                           width="20"
                           height="14"
                           :alt="`${country.name} flag`"
+                          @error="handleFlagError(country.code)"
                         />
+                        <span v-else class="country-flag-fallback" aria-hidden="true">
+                          {{ country.code === 'XX' ? '?' : country.code }}
+                        </span>
                       </span>
                       <span>{{ country.name }}</span>
                       <strong>{{ country.visits.toLocaleString() }}</strong>
@@ -1745,6 +1758,21 @@ h3 {
   height: 14px;
   border: 1px solid var(--line);
   object-fit: cover;
+}
+
+.country-flag-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 14px;
+  border: 1px solid var(--line);
+  background: var(--line-soft);
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
 }
 
 .country-meta strong {
