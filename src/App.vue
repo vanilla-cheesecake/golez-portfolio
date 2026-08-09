@@ -355,8 +355,8 @@ function logConsoleEasterEgg() {
       '%cLLOYD GOLEZ',
       '%cSoftware Engineer · Philippines',
       '',
-      '%cHey 👋',
-      '%cThanks for looking under the hood.',
+      '%cHey',
+      '%cThanks for looking under the hood. Please dont hack me haha LOL',
       '',
       '%cBuilt with Vue, Netlify, and an unreasonable amount of CSS.',
       '',
@@ -396,13 +396,8 @@ onMounted(() => {
 
       <p class="nav-label">SECTIONS</p>
       <nav>
-        <a
-          v-for="item in navItems"
-          :key="item.id"
-          :href="item.path"
-          :class="{ active: activeView === item.id }"
-          @click.prevent="selectView(item.id)"
-        >
+        <a v-for="item in navItems" :key="item.id" :href="item.path" :class="{ active: activeView === item.id }"
+          @click.prevent="selectView(item.id)">
           <svg v-if="item.icon === 'grid'" viewBox="0 0 24 24">
             <rect x="3" y="3" width="7" height="7" />
             <rect x="14" y="3" width="7" height="7" />
@@ -430,12 +425,7 @@ onMounted(() => {
         </a>
         <div class="socials">
           <a href="https://github.com/vanilla-cheesecake" target="_blank" rel="noopener">GITHUB</a>
-          <a
-            href="https://www.linkedin.com/in/lloyd-golez-301389169/"
-            target="_blank"
-            rel="noopener"
-            >LINKEDIN</a
-          >
+          <a href="https://www.linkedin.com/in/lloyd-golez-301389169/" target="_blank" rel="noopener">LINKEDIN</a>
         </div>
       </div>
     </aside>
@@ -471,11 +461,9 @@ onMounted(() => {
                   <g fill="#fcd116">
                     <circle cx="3.464" cy="6" r="1.35" />
                     <path
-                      d="M4.781 5.705L6.214 6L4.781 6.295ZM4.604 6.723L5.409 7.945L4.187 7.14ZM3.759 7.317L3.464 8.75L3.169 7.317ZM2.741 7.14L1.519 7.945L2.324 6.723ZM2.147 6.295L0.714 6L2.147 5.705ZM2.324 5.277L1.519 4.055L2.741 4.86ZM3.169 4.683L3.464 3.25L3.759 4.683ZM4.187 4.86L5.409 4.055L4.604 5.277Z"
-                    />
+                      d="M4.781 5.705L6.214 6L4.781 6.295ZM4.604 6.723L5.409 7.945L4.187 7.14ZM3.759 7.317L3.464 8.75L3.169 7.317ZM2.741 7.14L1.519 7.945L2.324 6.723ZM2.147 6.295L0.714 6L2.147 5.705ZM2.324 5.277L1.519 4.055L2.741 4.86ZM3.169 4.683L3.464 3.25L3.759 4.683ZM4.187 4.86L5.409 4.055L4.604 5.277Z" />
                     <path
-                      d="M1.9 1.05L2.1 1.625L2.708 1.637L2.223 2.005L2.4 2.588L1.9 2.24L1.4 2.588L1.577 2.005L1.092 1.637L1.7 1.625ZM1.9 9.25L2.1 9.825L2.708 9.837L2.223 10.205L2.4 10.788L1.9 10.44L1.4 10.788L1.577 10.205L1.092 9.837L1.7 9.825ZM8.192 5.15L8.392 5.725L9 5.737L8.515 6.105L8.692 6.688L8.192 6.34L7.692 6.688L7.869 6.105L7.384 5.737L7.992 5.725Z"
-                    />
+                      d="M1.9 1.05L2.1 1.625L2.708 1.637L2.223 2.005L2.4 2.588L1.9 2.24L1.4 2.588L1.577 2.005L1.092 1.637L1.7 1.625ZM1.9 9.25L2.1 9.825L2.708 9.837L2.223 10.205L2.4 10.788L1.9 10.44L1.4 10.788L1.577 10.205L1.092 9.837L1.7 9.825ZM8.192 5.15L8.392 5.725L9 5.737L8.515 6.105L8.692 6.688L8.192 6.34L7.692 6.688L7.869 6.105L7.384 5.737L7.992 5.725Z" />
                   </g>
                 </svg>
               </h1>
@@ -487,9 +475,7 @@ onMounted(() => {
               </p>
               <div class="hero-actions">
                 <a href="/experience" @click.prevent="selectView('experience')">EXPERIENCE</a>
-                <a class="ghost" href="/tech-stack" @click.prevent="selectView('skills')"
-                  >TECH STACK</a
-                >
+                <a class="ghost" href="/tech-stack" @click.prevent="selectView('skills')">TECH STACK</a>
                 <a class="ghost" href="/file/golez_lloyd_cv.pdf" download="Lloyd-Golez-CV.pdf">
                   MY CV ↓
                 </a>
@@ -497,14 +483,8 @@ onMounted(() => {
             </div>
 
             <figure class="hero-banner">
-              <img
-                src="/img/banner.avif"
-                width="1413"
-                height="766"
-                alt="Lloyd Golez playing guitar"
-                loading="lazy"
-                decoding="async"
-              />
+              <img src="/img/banner.avif" width="1413" height="766" alt="Lloyd Golez playing guitar" loading="lazy"
+                decoding="async" />
             </figure>
           </section>
 
@@ -520,25 +500,15 @@ onMounted(() => {
               <div v-if="contribState === 'ready'" class="contrib-scroll">
                 <div class="contrib-chart">
                   <div class="contrib-months">
-                    <span
-                      v-for="month in contribMonths"
-                      :key="month.week"
-                      :style="{ gridColumn: `${month.week + 1} / span ${month.span}` }"
-                      >{{ month.label }}</span
-                    >
+                    <span v-for="month in contribMonths" :key="month.week"
+                      :style="{ gridColumn: `${month.week + 1} / span ${month.span}` }">{{ month.label }}</span>
                   </div>
                   <div class="contrib-grid">
-                    <span
-                      v-for="(day, index) in contribDays"
-                      :key="day ? day.date : `pad-${index}`"
-                      class="cell"
-                      :class="day ? `level-${day.level}` : 'empty'"
-                      :title="
-                        day
+                    <span v-for="(day, index) in contribDays" :key="day ? day.date : `pad-${index}`" class="cell"
+                      :class="day ? `level-${day.level}` : 'empty'" :title="day
                           ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}`
                           : ''
-                      "
-                    ></span>
+                        "></span>
                   </div>
                 </div>
               </div>
@@ -592,19 +562,11 @@ onMounted(() => {
 
               <div v-if="visitorAnalyticsState === 'live'" class="country-list">
                 <p>VISITORS BY COUNTRY</p>
-                <div
-                  v-for="country in visitorAnalytics.countries"
-                  :key="country.code"
-                  class="country-row"
-                >
+                <div v-for="country in visitorAnalytics.countries" :key="country.code" class="country-row">
                   <div class="country-meta">
                     <span class="country-flag">
-                      <img
-                        :src="`/flags/${country.code.toLowerCase()}.svg`"
-                        width="20"
-                        height="14"
-                        :alt="`${country.name} flag`"
-                      />
+                      <img :src="`/flags/${country.code.toLowerCase()}.svg`" width="20" height="14"
+                        :alt="`${country.name} flag`" />
                     </span>
                     <span>{{ country.name }}</span>
                     <strong>{{ country.visits.toLocaleString() }}</strong>
@@ -849,13 +811,7 @@ onMounted(() => {
           <section class="social-section">
             <p class="kicker">ELSEWHERE</p>
             <div class="social-grid">
-              <a
-                v-for="social in socialLinks"
-                :key="social.name"
-                :href="social.url"
-                target="_blank"
-                rel="noopener"
-              >
+              <a v-for="social in socialLinks" :key="social.name" :href="social.url" target="_blank" rel="noopener">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path :d="socialPath(social.icon)" />
                 </svg>
@@ -1004,7 +960,7 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.sidebar nav > a {
+.sidebar nav>a {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1018,12 +974,12 @@ onMounted(() => {
   text-align: left;
 }
 
-.sidebar nav > a:hover {
+.sidebar nav>a:hover {
   color: var(--ink);
   background: var(--bg);
 }
 
-.sidebar nav > a.active {
+.sidebar nav>a.active {
   color: var(--ink);
   background: var(--bg);
   border-left-color: var(--accent);
@@ -1473,7 +1429,7 @@ h3 {
 
 .visitor-total span,
 .visitor-total small,
-.country-list > p {
+.country-list>p {
   display: block;
   color: var(--muted);
   font-size: 9px;
@@ -1497,11 +1453,11 @@ h3 {
   padding: 14px;
 }
 
-.country-list > p {
+.country-list>p {
   margin: 0 0 14px;
 }
 
-.country-row + .country-row {
+.country-row+.country-row {
   margin-top: 13px;
 }
 
@@ -1552,13 +1508,13 @@ h3 {
   border-bottom: 1px solid var(--line);
 }
 
-.stats > div {
+.stats>div {
   position: relative;
   padding: 24px 20px;
   border-right: 1px solid var(--line);
 }
 
-.stats > div:last-child {
+.stats>div:last-child {
   border-right: 0;
 }
 
@@ -1699,7 +1655,7 @@ h3 {
   border-bottom: 1px solid var(--line);
 }
 
-.page-heading > p:last-child {
+.page-heading>p:last-child {
   max-width: 620px;
   margin: 18px 0 0;
   font-size: 13px;
@@ -1719,7 +1675,7 @@ h3 {
   gap: 32px;
 }
 
-.timeline article + article {
+.timeline article+article {
   margin-top: 44px;
 }
 
@@ -1746,7 +1702,7 @@ h3 {
   margin-bottom: 14px;
 }
 
-.timeline-body > p {
+.timeline-body>p {
   max-width: 720px;
   font-size: 13px;
   line-height: 1.8;
@@ -1784,7 +1740,7 @@ h3 {
   padding: 40px 0 80px;
 }
 
-.tech-group + .tech-group {
+.tech-group+.tech-group {
   margin-top: 32px;
 }
 
@@ -2019,6 +1975,7 @@ footer {
 }
 
 @media (max-width: 680px) {
+
   .app-shell,
   main,
   .content,
@@ -2034,11 +1991,11 @@ footer {
     padding-top: 40px;
   }
 
-  .hero-actions > * {
+  .hero-actions>* {
     max-width: 100%;
   }
 
-  .country-meta > span:nth-child(2) {
+  .country-meta>span:nth-child(2) {
     min-width: 0;
     overflow-wrap: anywhere;
   }
@@ -2070,11 +2027,11 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
-  .stats > div:nth-child(2n) {
+  .stats>div:nth-child(2n) {
     border-right: 0;
   }
 
-  .stats > div:nth-child(-n + 2) {
+  .stats>div:nth-child(-n + 2) {
     border-bottom: 1px solid var(--line);
   }
 
