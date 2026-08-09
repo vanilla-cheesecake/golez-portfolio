@@ -584,418 +584,420 @@ onBeforeUnmount(() => {
       </header>
 
       <div class="content">
-        <template v-if="activeView === 'overview'">
-          <section class="hero">
-            <div class="hero-main">
-              <p class="kicker">LLOYD GOLEZ</p>
-              <h1>
-                Software Engineer
-                <!-- Inline rather than the flag emoji, which Windows renders as a "PH" letterbox. -->
-                <svg class="flag" viewBox="0 0 24 12" role="img" aria-label="Philippines">
-                  <title>Philippines</title>
-                  <rect width="24" height="6" fill="#0038a8" />
-                  <rect y="6" width="24" height="6" fill="#ce1126" />
-                  <path d="M0 0L10.392 6L0 12Z" fill="#fff" />
-                  <g fill="#fcd116">
-                    <circle cx="3.464" cy="6" r="1.35" />
-                    <path
-                      d="M4.781 5.705L6.214 6L4.781 6.295ZM4.604 6.723L5.409 7.945L4.187 7.14ZM3.759 7.317L3.464 8.75L3.169 7.317ZM2.741 7.14L1.519 7.945L2.324 6.723ZM2.147 6.295L0.714 6L2.147 5.705ZM2.324 5.277L1.519 4.055L2.741 4.86ZM3.169 4.683L3.464 3.25L3.759 4.683ZM4.187 4.86L5.409 4.055L4.604 5.277Z"
-                    />
-                    <path
-                      d="M1.9 1.05L2.1 1.625L2.708 1.637L2.223 2.005L2.4 2.588L1.9 2.24L1.4 2.588L1.577 2.005L1.092 1.637L1.7 1.625ZM1.9 9.25L2.1 9.825L2.708 9.837L2.223 10.205L2.4 10.788L1.9 10.44L1.4 10.788L1.577 10.205L1.092 9.837L1.7 9.825ZM8.192 5.15L8.392 5.725L9 5.737L8.515 6.105L8.692 6.688L8.192 6.34L7.692 6.688L7.869 6.105L7.384 5.737L7.992 5.725Z"
-                    />
-                  </g>
-                </svg>
-              </h1>
-              <p class="lead">
-                I'm a software engineer building web, mobile, and desktop applications. I primarily
-                work with Laravel and PHP, alongside Vue, Livewire, MySQL, SQL Server, Kotlin, C#,
-                and VB.NET. My work spans backend development, APIs, databases, user interfaces,
-                system integrations, and application deployment.
-              </p>
-              <div class="hero-actions">
-                <a href="/experience" @click.prevent="selectView('experience')">EXPERIENCE</a>
-                <a class="ghost" href="/tech-stack" @click.prevent="selectView('skills')"
-                  >TECH STACK</a
-                >
-                <a class="ghost" href="/file/golez_lloyd_cv.pdf" download="Lloyd-Golez-CV.pdf">
-                  MY CV ↓
-                </a>
-              </div>
-            </div>
-
-            <figure class="hero-banner">
-              <img
-                src="/img/banner.avif"
-                width="1413"
-                height="766"
-                alt="Lloyd Golez playing guitar"
-                loading="lazy"
-                decoding="async"
-              />
-            </figure>
-          </section>
-
-          <div class="overview-analytics">
-            <section class="contrib-panel">
-              <div class="panel-head">
-                <span>GITHUB ACTIVITY</span>
-                <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
-                  @{{ githubUser }} ↗
-                </a>
-              </div>
-
-              <div v-if="contribState === 'ready'" class="contrib-scroll">
-                <div class="contrib-chart">
-                  <div class="contrib-months">
-                    <span
-                      v-for="month in contribMonths"
-                      :key="month.week"
-                      :style="{ gridColumn: `${month.week + 1} / span ${month.span}` }"
-                      >{{ month.label }}</span
-                    >
-                  </div>
-                  <div class="contrib-grid">
-                    <span
-                      v-for="(day, index) in contribDays"
-                      :key="day ? day.date : `pad-${index}`"
-                      class="cell"
-                      :class="day ? `level-${day.level}` : 'empty'"
-                      :title="
-                        day
-                          ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}`
-                          : ''
-                      "
-                    ></span>
-                  </div>
-                </div>
-              </div>
-
-              <div v-else class="contrib-message">
-                <span v-if="contribState === 'loading'">Loading contribution data…</span>
-                <span v-else>
-                  Contribution data unavailable —
-                  <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
-                    view it on GitHub ↗
+        <div :key="activeView" class="view-stage">
+          <template v-if="activeView === 'overview'">
+            <section class="hero">
+              <div class="hero-main">
+                <p class="kicker">LLOYD GOLEZ</p>
+                <h1>
+                  Software Engineer
+                  <!-- Inline rather than the flag emoji, which Windows renders as a "PH" letterbox. -->
+                  <svg class="flag" viewBox="0 0 24 12" role="img" aria-label="Philippines">
+                    <title>Philippines</title>
+                    <rect width="24" height="6" fill="#0038a8" />
+                    <rect y="6" width="24" height="6" fill="#ce1126" />
+                    <path d="M0 0L10.392 6L0 12Z" fill="#fff" />
+                    <g fill="#fcd116">
+                      <circle cx="3.464" cy="6" r="1.35" />
+                      <path
+                        d="M4.781 5.705L6.214 6L4.781 6.295ZM4.604 6.723L5.409 7.945L4.187 7.14ZM3.759 7.317L3.464 8.75L3.169 7.317ZM2.741 7.14L1.519 7.945L2.324 6.723ZM2.147 6.295L0.714 6L2.147 5.705ZM2.324 5.277L1.519 4.055L2.741 4.86ZM3.169 4.683L3.464 3.25L3.759 4.683ZM4.187 4.86L5.409 4.055L4.604 5.277Z"
+                      />
+                      <path
+                        d="M1.9 1.05L2.1 1.625L2.708 1.637L2.223 2.005L2.4 2.588L1.9 2.24L1.4 2.588L1.577 2.005L1.092 1.637L1.7 1.625ZM1.9 9.25L2.1 9.825L2.708 9.837L2.223 10.205L2.4 10.788L1.9 10.44L1.4 10.788L1.577 10.205L1.092 9.837L1.7 9.825ZM8.192 5.15L8.392 5.725L9 5.737L8.515 6.105L8.692 6.688L8.192 6.34L7.692 6.688L7.869 6.105L7.384 5.737L7.992 5.725Z"
+                      />
+                    </g>
+                  </svg>
+                </h1>
+                <p class="lead">
+                  I'm a software engineer building web, mobile, and desktop applications. I
+                  primarily work with Laravel and PHP, alongside Vue, Livewire, MySQL, SQL Server,
+                  Kotlin, C#, and VB.NET. My work spans backend development, APIs, databases, user
+                  interfaces, system integrations, and application deployment.
+                </p>
+                <div class="hero-actions">
+                  <a href="/experience" @click.prevent="selectView('experience')">EXPERIENCE</a>
+                  <a class="ghost" href="/tech-stack" @click.prevent="selectView('skills')"
+                    >TECH STACK</a
+                  >
+                  <a class="ghost" href="/file/golez_lloyd_cv.pdf" download="Lloyd-Golez-CV.pdf">
+                    MY CV ↓
                   </a>
-                </span>
-              </div>
-
-              <div class="panel-foot">
-                <span v-if="contribState === 'ready'">
-                  {{ contribTotal.toLocaleString() }} contributions in the last year
-                </span>
-                <span v-else></span>
-                <div class="contrib-legend">
-                  <span>LESS</span>
-                  <i class="cell level-0"></i>
-                  <i class="cell level-1"></i>
-                  <i class="cell level-2"></i>
-                  <i class="cell level-3"></i>
-                  <i class="cell level-4"></i>
-                  <span>MORE</span>
                 </div>
               </div>
+
+              <figure class="hero-banner">
+                <img
+                  src="/img/banner.avif"
+                  width="1413"
+                  height="766"
+                  alt="Lloyd Golez playing guitar"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
             </section>
 
-            <aside class="visitor-panel" aria-labelledby="visitor-title">
-              <div class="panel-head">
-                <span id="visitor-title">VISITORS</span>
-                <span class="visitor-status" :class="{ live: visitorAnalyticsState === 'live' }">
-                  {{
-                    visitorAnalyticsState === 'live'
-                      ? 'LIVE'
-                      : visitorAnalyticsState === 'loading'
-                        ? 'LOADING'
-                        : 'OFFLINE'
-                  }}
-                </span>
-              </div>
+            <div class="overview-analytics">
+              <section class="contrib-panel">
+                <div class="panel-head">
+                  <span>GITHUB ACTIVITY</span>
+                  <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
+                    @{{ githubUser }} ↗
+                  </a>
+                </div>
 
-              <div v-if="visitorAnalyticsState === 'live'" class="visitor-total">
-                <span>ALL-TIME VISITS</span>
-                <strong>{{ visitorAnalytics.total.toLocaleString() }}</strong>
-                <small>Unique browser visits</small>
-              </div>
-
-              <div v-if="visitorAnalyticsState === 'live'" class="country-list">
-                <p>VISITORS BY COUNTRY</p>
-                <div
-                  v-for="country in visitorAnalytics.countries"
-                  :key="country.code"
-                  class="country-row"
-                >
-                  <div class="country-meta">
-                    <span class="country-flag">
-                      <img
-                        :src="`/flags/${country.code.toLowerCase()}.svg`"
-                        width="20"
-                        height="14"
-                        :alt="`${country.name} flag`"
-                      />
-                    </span>
-                    <span>{{ country.name }}</span>
-                    <strong>{{ country.visits.toLocaleString() }}</strong>
-                  </div>
-                  <div class="country-track" aria-hidden="true">
-                    <i :style="{ width: `${(country.visits / topVisitorCount) * 100}%` }"></i>
+                <div v-if="contribState === 'ready'" class="contrib-scroll">
+                  <div class="contrib-chart">
+                    <div class="contrib-months">
+                      <span
+                        v-for="month in contribMonths"
+                        :key="month.week"
+                        :style="{ gridColumn: `${month.week + 1} / span ${month.span}` }"
+                        >{{ month.label }}</span
+                      >
+                    </div>
+                    <div class="contrib-grid">
+                      <span
+                        v-for="(day, index) in contribDays"
+                        :key="day ? day.date : `pad-${index}`"
+                        class="cell"
+                        :class="day ? `level-${day.level}` : 'empty'"
+                        :title="
+                          day
+                            ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}`
+                            : ''
+                        "
+                      ></span>
+                    </div>
                   </div>
                 </div>
-                <span v-if="!visitorAnalytics.countries.length" class="visitor-empty">
-                  No country data yet.
-                </span>
-              </div>
-              <div v-else class="visitor-message">
-                {{
-                  visitorAnalyticsState === 'loading'
-                    ? 'Loading visitor analytics…'
-                    : 'Visitor analytics unavailable.'
-                }}
-              </div>
-            </aside>
-          </div>
 
-          <!-- <section class="stats">
+                <div v-else class="contrib-message">
+                  <span v-if="contribState === 'loading'">Loading contribution data…</span>
+                  <span v-else>
+                    Contribution data unavailable —
+                    <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
+                      view it on GitHub ↗
+                    </a>
+                  </span>
+                </div>
+
+                <div class="panel-foot">
+                  <span v-if="contribState === 'ready'">
+                    {{ contribTotal.toLocaleString() }} contributions in the last year
+                  </span>
+                  <span v-else></span>
+                  <div class="contrib-legend">
+                    <span>LESS</span>
+                    <i class="cell level-0"></i>
+                    <i class="cell level-1"></i>
+                    <i class="cell level-2"></i>
+                    <i class="cell level-3"></i>
+                    <i class="cell level-4"></i>
+                    <span>MORE</span>
+                  </div>
+                </div>
+              </section>
+
+              <aside class="visitor-panel" aria-labelledby="visitor-title">
+                <div class="panel-head">
+                  <span id="visitor-title">VISITORS</span>
+                  <span class="visitor-status" :class="{ live: visitorAnalyticsState === 'live' }">
+                    {{
+                      visitorAnalyticsState === 'live'
+                        ? 'LIVE'
+                        : visitorAnalyticsState === 'loading'
+                          ? 'LOADING'
+                          : 'OFFLINE'
+                    }}
+                  </span>
+                </div>
+
+                <div v-if="visitorAnalyticsState === 'live'" class="visitor-total">
+                  <span>ALL-TIME VISITS</span>
+                  <strong>{{ visitorAnalytics.total.toLocaleString() }}</strong>
+                  <small>Unique browser visits</small>
+                </div>
+
+                <div v-if="visitorAnalyticsState === 'live'" class="country-list">
+                  <p>VISITORS BY COUNTRY</p>
+                  <div
+                    v-for="country in visitorAnalytics.countries"
+                    :key="country.code"
+                    class="country-row"
+                  >
+                    <div class="country-meta">
+                      <span class="country-flag">
+                        <img
+                          :src="`/flags/${country.code.toLowerCase()}.svg`"
+                          width="20"
+                          height="14"
+                          :alt="`${country.name} flag`"
+                        />
+                      </span>
+                      <span>{{ country.name }}</span>
+                      <strong>{{ country.visits.toLocaleString() }}</strong>
+                    </div>
+                    <div class="country-track" aria-hidden="true">
+                      <i :style="{ width: `${(country.visits / topVisitorCount) * 100}%` }"></i>
+                    </div>
+                  </div>
+                  <span v-if="!visitorAnalytics.countries.length" class="visitor-empty">
+                    No country data yet.
+                  </span>
+                </div>
+                <div v-else class="visitor-message">
+                  {{
+                    visitorAnalyticsState === 'loading'
+                      ? 'Loading visitor analytics…'
+                      : 'Visitor analytics unavailable.'
+                  }}
+                </div>
+              </aside>
+            </div>
+
+            <!-- <section class="stats">
             <div v-for="([value, label], index) in stats" :key="label">
               <span class="stat-index">{{ String(index + 1).padStart(2, '0') }}</span>
               <strong>{{ value }}</strong>
               <p>{{ label }}</p>
             </div>
           </section> -->
-        </template>
+          </template>
 
-        <template v-else-if="activeView === 'experience'">
-          <section class="page-heading">
-            <p class="kicker">EXPERIENCE</p>
-            <h1>Career log</h1>
-            <p>
-              I work across requirements, system architecture, implementation, deployment, and
-              production support.
-            </p>
-          </section>
-          <section class="timeline">
-            <article>
-              <div class="timeline-date">
-                AUG 2023<br />
-                <span class="current">PRESENT</span>
+          <template v-else-if="activeView === 'experience'">
+            <section class="page-heading">
+              <p class="kicker">EXPERIENCE</p>
+              <h1>Career log</h1>
+              <p>
+                I work across requirements, system architecture, implementation, deployment, and
+                production support.
+              </p>
+            </section>
+            <section class="timeline">
+              <article>
+                <div class="timeline-date">
+                  AUG 2023<br />
+                  <span class="current">PRESENT</span>
+                </div>
+
+                <div class="timeline-body">
+                  <p class="kicker">DIGIMAX IT SOLUTIONS</p>
+
+                  <h2>Software Engineer</h2>
+
+                  <p>
+                    Develop and maintain business applications across accounting, HRIS, payroll,
+                    point of sale, invoicing, reporting, API integrations, desktop utilities, and
+                    Android applications.
+                  </p>
+
+                  <ul>
+                    <li>
+                      Build full-stack web applications using Laravel, Livewire, Vue.js, JavaScript,
+                      TypeScript, and Tailwind CSS.
+                    </li>
+
+                    <li>
+                      Design backend architecture, relational database schemas, business logic,
+                      transaction workflows, and reporting features using MySQL and SQL Server.
+                    </li>
+
+                    <li>
+                      Develop accounting modules including invoices, payments, journal entries,
+                      general ledger, trial balance, accounts payable, accounts receivable, credit
+                      memos, and audit trails.
+                    </li>
+
+                    <li>
+                      Develop HRIS and payroll features including employee management, attendance,
+                      shifts, overtime, leave management, payroll processing, loans, deductions, and
+                      reporting.
+                    </li>
+
+                    <li>
+                      Build REST APIs and external system integrations using OAuth 2.0, bearer
+                      tokens, API keys, JSON, XML, SFTP, and file-based batch processing.
+                    </li>
+
+                    <li>
+                      Develop Windows desktop applications and accounting utilities using C#,
+                      VB.NET, .NET, SQL Server, and QuickBooks Desktop QBSDK.
+                    </li>
+
+                    <li>
+                      Develop native Android applications using Kotlin and Jetpack Compose,
+                      integrated with Laravel-based backend APIs.
+                    </li>
+
+                    <li>
+                      Deploy and maintain applications on Ubuntu Linux servers, including Apache,
+                      PHP-FPM, SSL/TLS, DNS, SSH, SFTP, firewall rules, permissions, and production
+                      environment configuration.
+                    </li>
+
+                    <li>
+                      Manage application releases, Git workflows, staging and production
+                      environments, database migrations, and CI workflows using GitHub Actions.
+                    </li>
+                  </ul>
+
+                  <div class="tags">
+                    <span>Laravel</span>
+                    <span>PHP</span>
+                    <span>Livewire</span>
+                    <span>Vue.js</span>
+                    <span>Kotlin</span>
+                    <span>C#</span>
+                    <span>VB.NET</span>
+                    <span>MySQL</span>
+                    <span>SQL Server</span>
+                    <span>REST API</span>
+                    <span>Linux</span>
+                  </div>
+                </div>
+              </article>
+
+              <article>
+                <div class="timeline-date">
+                  AUG 2022<br />
+                  <span>AUG 2023</span>
+                </div>
+
+                <div class="timeline-body">
+                  <p class="kicker">ST. VINCENT COLLEGE OF CABUYAO · CABUYAO, LAGUNA</p>
+
+                  <h2>IT Staff</h2>
+
+                  <ul>
+                    <li>
+                      Supported users, computers, software, networks, and administrative systems
+                      while helping maintain reliable day-to-day campus IT operations.
+                    </li>
+
+                    <li>
+                      Assisted with system setup, troubleshooting, data handling, documentation, and
+                      general technical support.
+                    </li>
+                  </ul>
+
+                  <div class="tags">
+                    <span>User Support</span>
+                    <span>Troubleshooting</span>
+                    <span>Networking</span>
+                    <span>System Setup</span>
+                    <span>Documentation</span>
+                  </div>
+                </div>
+              </article>
+
+              <article>
+                <div class="timeline-date">
+                  SEP 2021<br />
+                  <span>NOV 2021</span>
+                </div>
+
+                <div class="timeline-body">
+                  <p class="kicker">ST. VINCENT COLLEGE OF CABUYAO · CABUYAO, LAGUNA</p>
+
+                  <h2>Intern</h2>
+
+                  <ul>
+                    <li>
+                      Collaborated with a team to develop and maintain websites using HTML, CSS,
+                      JavaScript, and PHP.
+                    </li>
+
+                    <li>
+                      Gained hands-on experience in web development practices, including version
+                      control and testing.
+                    </li>
+                  </ul>
+
+                  <div class="tags">
+                    <span>HTML</span>
+                    <span>CSS</span>
+                    <span>JavaScript</span>
+                    <span>PHP</span>
+                    <span>Git</span>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </template>
+
+          <template v-else-if="activeView === 'skills'">
+            <section class="page-heading">
+              <p class="kicker">TECH STACK</p>
+              <h1>Tools and technologies</h1>
+              <p>The technologies I work with.</p>
+            </section>
+            <section class="tech-section">
+              <div v-for="group in techGroups" :key="group.name" class="tech-group">
+                <p class="tech-group-name">{{ group.name }}</p>
+                <div class="tech-grid">
+                  <div v-for="item in group.items" :key="item.name" class="tech-item">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path :d="iconPath(item.icon)" />
+                    </svg>
+                    <span>{{ item.name }}</span>
+                  </div>
+                </div>
               </div>
+            </section>
+          </template>
 
-              <div class="timeline-body">
-                <p class="kicker">DIGIMAX IT SOLUTIONS</p>
-
-                <h2>Software Engineer</h2>
-
+          <template v-else>
+            <section class="page-heading">
+              <p class="kicker">ABOUT</p>
+              <h1>ABOUT ME</h1>
+              <p>
+                I’m a software engineer with experience in web, mobile, and desktop development. I
+                work primarily with Laravel and PHP, alongside Vue, Livewire, Kotlin, C#, VB.NET,
+                MySQL, and SQL Server.
+              </p>
+            </section>
+            <section class="about-panel">
+              <div>
+                <p class="kicker">HOW I WORK</p>
+                <h2>End-to-end development</h2>
+              </div>
+              <div>
                 <p>
-                  Develop and maintain business applications across accounting, HRIS, payroll, point
-                  of sale, invoicing, reporting, API integrations, desktop utilities, and Android
-                  applications.
+                  I handle projects from requirements and database design through development,
+                  integration, deployment, and maintenance.
                 </p>
-
-                <ul>
-                  <li>
-                    Build full-stack web applications using Laravel, Livewire, Vue.js, JavaScript,
-                    TypeScript, and Tailwind CSS.
-                  </li>
-
-                  <li>
-                    Design backend architecture, relational database schemas, business logic,
-                    transaction workflows, and reporting features using MySQL and SQL Server.
-                  </li>
-
-                  <li>
-                    Develop accounting modules including invoices, payments, journal entries,
-                    general ledger, trial balance, accounts payable, accounts receivable, credit
-                    memos, and audit trails.
-                  </li>
-
-                  <li>
-                    Develop HRIS and payroll features including employee management, attendance,
-                    shifts, overtime, leave management, payroll processing, loans, deductions, and
-                    reporting.
-                  </li>
-
-                  <li>
-                    Build REST APIs and external system integrations using OAuth 2.0, bearer tokens,
-                    API keys, JSON, XML, SFTP, and file-based batch processing.
-                  </li>
-
-                  <li>
-                    Develop Windows desktop applications and accounting utilities using C#, VB.NET,
-                    .NET, SQL Server, and QuickBooks Desktop QBSDK.
-                  </li>
-
-                  <li>
-                    Develop native Android applications using Kotlin and Jetpack Compose, integrated
-                    with Laravel-based backend APIs.
-                  </li>
-
-                  <li>
-                    Deploy and maintain applications on Ubuntu Linux servers, including Apache,
-                    PHP-FPM, SSL/TLS, DNS, SSH, SFTP, firewall rules, permissions, and production
-                    environment configuration.
-                  </li>
-
-                  <li>
-                    Manage application releases, Git workflows, staging and production environments,
-                    database migrations, and CI workflows using GitHub Actions.
-                  </li>
-                </ul>
-
-                <div class="tags">
-                  <span>Laravel</span>
-                  <span>PHP</span>
-                  <span>Livewire</span>
-                  <span>Vue.js</span>
-                  <span>Kotlin</span>
-                  <span>C#</span>
-                  <span>VB.NET</span>
-                  <span>MySQL</span>
-                  <span>SQL Server</span>
-                  <span>REST API</span>
-                  <span>Linux</span>
-                </div>
+                <p>
+                  My work spans web, backend, desktop, and Android applications, with a focus on
+                  reliable business software.
+                </p>
+                <a class="text-link" href="mailto:golez.sf@gmail.com">golez.sf@gmail.com →</a>
               </div>
-            </article>
+            </section>
 
-            <article>
-              <div class="timeline-date">
-                AUG 2022<br />
-                <span>AUG 2023</span>
-              </div>
-
-              <div class="timeline-body">
-                <p class="kicker">ST. VINCENT COLLEGE OF CABUYAO · CABUYAO, LAGUNA</p>
-
-                <h2>IT Staff</h2>
-
-                <ul>
-                  <li>
-                    Supported users, computers, software, networks, and administrative systems while
-                    helping maintain reliable day-to-day campus IT operations.
-                  </li>
-
-                  <li>
-                    Assisted with system setup, troubleshooting, data handling, documentation, and
-                    general technical support.
-                  </li>
-                </ul>
-
-                <div class="tags">
-                  <span>User Support</span>
-                  <span>Troubleshooting</span>
-                  <span>Networking</span>
-                  <span>System Setup</span>
-                  <span>Documentation</span>
-                </div>
-              </div>
-            </article>
-
-            <article>
-              <div class="timeline-date">
-                SEP 2021<br />
-                <span>NOV 2021</span>
-              </div>
-
-              <div class="timeline-body">
-                <p class="kicker">ST. VINCENT COLLEGE OF CABUYAO · CABUYAO, LAGUNA</p>
-
-                <h2>Intern</h2>
-
-                <ul>
-                  <li>
-                    Collaborated with a team to develop and maintain websites using HTML, CSS,
-                    JavaScript, and PHP.
-                  </li>
-
-                  <li>
-                    Gained hands-on experience in web development practices, including version
-                    control and testing.
-                  </li>
-                </ul>
-
-                <div class="tags">
-                  <span>HTML</span>
-                  <span>CSS</span>
-                  <span>JavaScript</span>
-                  <span>PHP</span>
-                  <span>Git</span>
-                </div>
-              </div>
-            </article>
-          </section>
-        </template>
-
-        <template v-else-if="activeView === 'skills'">
-          <section class="page-heading">
-            <p class="kicker">TECH STACK</p>
-            <h1>Tools and technologies</h1>
-            <p>The technologies I work with.</p>
-          </section>
-          <section class="tech-section">
-            <div v-for="group in techGroups" :key="group.name" class="tech-group">
-              <p class="tech-group-name">{{ group.name }}</p>
-              <div class="tech-grid">
-                <div v-for="item in group.items" :key="item.name" class="tech-item">
+            <section class="social-section">
+              <p class="kicker">ELSEWHERE</p>
+              <div class="social-grid">
+                <a
+                  v-for="social in socialLinks"
+                  :key="social.name"
+                  :href="social.url"
+                  target="_blank"
+                  rel="noopener"
+                >
                   <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path :d="iconPath(item.icon)" />
+                    <path :d="socialPath(social.icon)" />
                   </svg>
-                  <span>{{ item.name }}</span>
-                </div>
+                  <span>
+                    <strong>{{ social.name }}</strong>
+                    <small>{{ social.handle }}</small>
+                  </span>
+                  <i>↗</i>
+                </a>
               </div>
-            </div>
-          </section>
-        </template>
-
-        <template v-else>
-          <section class="page-heading">
-            <p class="kicker">ABOUT</p>
-            <h1>ABOUT ME</h1>
-            <p>
-              I’m a software engineer with experience in web, mobile, and desktop development. I
-              work primarily with Laravel and PHP, alongside Vue, Livewire, Kotlin, C#, VB.NET,
-              MySQL, and SQL Server.
-            </p>
-          </section>
-          <section class="about-panel">
-            <div>
-              <p class="kicker">HOW I WORK</p>
-              <h2>End-to-end development</h2>
-            </div>
-            <div>
-              <p>
-                I handle projects from requirements and database design through development,
-                integration, deployment, and maintenance.
-              </p>
-              <p>
-                My work spans web, backend, desktop, and Android applications, with a focus on
-                reliable business software.
-              </p>
-              <a class="text-link" href="mailto:golez.sf@gmail.com">golez.sf@gmail.com →</a>
-            </div>
-          </section>
-
-          <section class="social-section">
-            <p class="kicker">ELSEWHERE</p>
-            <div class="social-grid">
-              <a
-                v-for="social in socialLinks"
-                :key="social.name"
-                :href="social.url"
-                target="_blank"
-                rel="noopener"
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path :d="socialPath(social.icon)" />
-                </svg>
-                <span>
-                  <strong>{{ social.name }}</strong>
-                  <small>{{ social.handle }}</small>
-                </span>
-                <i>↗</i>
-              </a>
-            </div>
-          </section>
-        </template>
+            </section>
+          </template>
+        </div>
 
         <!-- <footer>
           <span>© {{ new Date().getFullYear() }} LLOYD GOLEZ</span>
@@ -1375,6 +1377,40 @@ main {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 32px;
+}
+
+.view-stage {
+  min-width: 0;
+  animation: section-slide-down 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform;
+}
+
+@keyframes section-slide-down {
+  from {
+    transform: translateY(-48px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes section-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Travel is what triggers vestibular discomfort, not the fade — keep a short crossfade. */
+@media (prefers-reduced-motion: reduce) {
+  .view-stage {
+    animation: section-fade-in 0.12s ease both;
+    will-change: opacity;
+  }
 }
 
 .kicker {
