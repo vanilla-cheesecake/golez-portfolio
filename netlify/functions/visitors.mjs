@@ -23,26 +23,19 @@ async function redis(commands, endpoint = 'pipeline') {
     throw new Error('UPSTASH_REDIS_REST_TOKEN is missing')
   }
 
-  const response = await fetch(
-    `${url.replace(/\/$/, '')}/${endpoint}`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(commands),
+  const response = await fetch(`${url.replace(/\/$/, '')}/${endpoint}`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
-  )
+    body: JSON.stringify(commands),
+  })
 
   const result = await response.json()
 
   if (!response.ok) {
-    throw new Error(
-      `Upstash HTTP ${response.status}: ${
-        result?.error ?? JSON.stringify(result)
-      }`
-    )
+    throw new Error(`Upstash HTTP ${response.status}: ${result?.error ?? JSON.stringify(result)}`)
   }
 
   // /multi-exec may return a single error object
@@ -51,9 +44,7 @@ async function redis(commands, endpoint = 'pipeline') {
       throw new Error(`Upstash: ${result.error}`)
     }
 
-    throw new Error(
-      `Unexpected Upstash response: ${JSON.stringify(result)}`
-    )
+    throw new Error(`Unexpected Upstash response: ${JSON.stringify(result)}`)
   }
 
   const failed = result.find((item) => item?.error)
@@ -100,18 +91,34 @@ function shapeAnalytics(total, countryHash) {
   }
 }
 
+function isLikelyBot(request) {
+  const userAgent = request.headers.get('user-agent') || ''
+
+  return (
+    !userAgent ||
+    /bot|crawler|spider|slurp|bingpreview|googleother|lighthouse|headlesschrome|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|discordbot|uptimerobot|pingdom/i.test(
+      userAgent,
+    )
+  )
+}
+
+async function readAnalytics() {
+  const [total, countries] = await redis([
+    ['GET', TOTAL_KEY],
+    ['HGETALL', COUNTRY_KEY],
+  ])
+
+  return shapeAnalytics(total, countries)
+}
+
 export default async (request, context) => {
   if (!['GET', 'POST'].includes(request.method)) {
-    return json(
-      { error: 'Method not allowed' },
-      405
-    )
+    return json({ error: 'Method not allowed' }, 405)
   }
 
   try {
-    if (request.method === 'POST') {
-      const countryCode =
-        context.geo?.country?.code?.toUpperCase() || 'XX'
+    if (request.method === 'POST' && !isLikelyBot(request)) {
+      const countryCode = context.geo?.country?.code?.toUpperCase() || 'XX'
 
       const [total, , countries] = await redis(
         [
@@ -122,19 +129,10 @@ export default async (request, context) => {
         'multi-exec',
       )
 
-      return json(
-        shapeAnalytics(total, countries)
-      )
+      return json(shapeAnalytics(total, countries))
     }
 
-    const [total, countries] = await redis([
-      ['GET', TOTAL_KEY],
-      ['HGETALL', COUNTRY_KEY],
-    ])
-
-    return json(
-      shapeAnalytics(total, countries)
-    )
+    return json(await readAnalytics())
   } catch (error) {
     console.error('Visitor analytics failed:', error)
 
