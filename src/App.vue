@@ -810,12 +810,15 @@ onMounted(() => {
 
 :global(html) {
   scroll-behavior: smooth;
+  overflow-x: clip;
+  background: #0d0d0d;
 }
 
 :global(body) {
   margin: 0;
   min-width: 320px;
-  background: #ffffff;
+  overflow-x: clip;
+  background: #0d0d0d;
   color: #111111;
   font-family: Arial, 'Helvetica Neue', Helvetica, 'Liberation Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -1031,6 +1034,7 @@ onMounted(() => {
 main {
   margin-left: 250px;
   min-height: 100vh;
+  min-width: 0;
 }
 
 .topbar {
@@ -1107,6 +1111,7 @@ main {
 /* ---------- layout ---------- */
 
 .content {
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 32px;
@@ -1148,6 +1153,10 @@ h3 {
   gap: 48px;
   align-items: center;
   padding: 56px 0 44px;
+}
+
+.hero-main {
+  min-width: 0;
 }
 
 .flag {
@@ -1840,6 +1849,22 @@ footer {
 /* ---------- responsive ---------- */
 
 @media (max-width: 1100px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .hero-banner {
+    width: 100%;
+    max-width: 420px;
+    transform: none;
+    overflow: hidden;
+  }
+
+  .hero-banner img {
+    width: 100%;
+  }
+
   .overview-analytics {
     grid-template-columns: 1fr;
   }
@@ -1907,16 +1932,6 @@ footer {
     margin-left: 0;
   }
 
-  .hero {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  .hero-banner {
-    max-width: 420px;
-    transform: none;
-  }
-
   .about-panel {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -1928,6 +1943,30 @@ footer {
 }
 
 @media (max-width: 680px) {
+  .app-shell,
+  main,
+  .content,
+  .hero,
+  .overview-analytics,
+  .contrib-panel,
+  .visitor-panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hero {
+    padding-top: 40px;
+  }
+
+  .hero-actions > * {
+    max-width: 100%;
+  }
+
+  .country-meta > span:nth-child(2) {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .visitor-panel {
     display: block;
   }
@@ -1998,6 +2037,19 @@ footer {
   .sidebar {
     width: 260px;
     max-width: 82vw;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-actions button,
+  .hero-actions a {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
