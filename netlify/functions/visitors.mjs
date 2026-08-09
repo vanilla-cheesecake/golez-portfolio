@@ -1,0 +1,100 @@
+const TOTAL_KEY = 'portfolio:visitors:total'
+const COUNTRY_KEY = 'portfolio:visitors:countries'
+
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store',
+    },
+  })
+}
+
+async function redis(commands, endpoint = 'pipeline') {
+  const url = process.env.UPSTASH_REDIS_REST_URL
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN
+
+  if (!url || !token) throw new Error('Upstash REST environment variables are not configured')
+
+  const response = await fetch(`${url.replace(/\/$/, '')}/${endpoint}`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify(commands),
+  })
+
+  if (!response.ok) throw new Error(`Upstash returned HTTP ${response.status}`)
+
+  const results = await response.json()
+  const failed = results.find((item) => item.error)
+  if (failed) throw new Error(failed.error)
+
+  return results.map((item) => item.result)
+}
+
+function countryName(code) {
+  if (code === 'XX') return 'Unknown'
+
+  try {
+    return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code
+  } catch {
+    return code
+  }
+}
+
+function shapeAnalytics(total, countryHash) {
+  const countries = []
+
+  for (let index = 0; index < countryHash.length; index += 2) {
+    const code = countryHash[index]
+    countries.push({
+      code,
+      name: countryName(code),
+      visits: Number(countryHash[index + 1]),
+    })
+  }
+
+  countries.sort((a, b) => b.visits - a.visits)
+
+  return {
+    total: Number(total || 0),
+    countries: countries.slice(0, 6),
+  }
+}
+
+export default async (request, context) => {
+  if (!['GET', 'POST'].includes(request.method)) return json({ error: 'Method not allowed' }, 405)
+
+  try {
+    if (request.method === 'POST') {
+      const countryCode = context.geo?.country?.code?.toUpperCase() || 'XX'
+      const [total, , countries] = await redis(
+        [
+          ['INCR', TOTAL_KEY],
+          ['HINCRBY', COUNTRY_KEY, countryCode, 1],
+          ['HGETALL', COUNTRY_KEY],
+        ],
+        'multi-exec',
+      )
+
+      return json(shapeAnalytics(total, countries))
+    }
+
+    const [total, countries] = await redis([
+      ['GET', TOTAL_KEY],
+      ['HGETALL', COUNTRY_KEY],
+    ])
+
+    return json(shapeAnalytics(total, countries))
+  } catch (error) {
+    console.error('Visitor analytics failed:', error)
+    return json({ error: 'Visitor analytics unavailable' }, 503)
+  }
+}
+
+export const config = {
+  path: '/api/visitors',
+}

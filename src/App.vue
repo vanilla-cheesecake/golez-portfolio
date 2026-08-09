@@ -20,7 +20,44 @@ const contribDays = ref([])
 const contribMonths = ref([])
 const contribTotal = ref(0)
 
-const MONTH_NAMES = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+const visitorAnalytics = ref({
+  total: 0,
+  countries: [],
+})
+const visitorAnalyticsState = ref('loading')
+
+const topVisitorCount = computed(() => visitorAnalytics.value.countries[0]?.visits || 1)
+
+async function loadVisitorAnalytics() {
+  try {
+    const hasBeenCounted = localStorage.getItem('portfolio-visitor-counted') === 'true'
+    const response = await fetch('/api/visitors', { method: hasBeenCounted ? 'GET' : 'POST' })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+    const data = await response.json()
+    visitorAnalytics.value = data
+    visitorAnalyticsState.value = 'live'
+
+    if (!hasBeenCounted) localStorage.setItem('portfolio-visitor-counted', 'true')
+  } catch {
+    visitorAnalyticsState.value = 'error'
+  }
+}
+
+const MONTH_NAMES = [
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
+  'MAY',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC',
+]
 
 function formatDate(iso) {
   const [year, month, day] = iso.split('-')
@@ -73,22 +110,26 @@ const capabilities = [
   {
     label: 'BACKEND',
     title: 'Backend & business logic',
-    detail: 'Laravel application architecture, REST APIs, queues, scheduled jobs, role and permission systems, audit logging, document generation.',
+    detail:
+      'Laravel application architecture, REST APIs, queues, scheduled jobs, role and permission systems, audit logging, document generation.',
   },
   {
     label: 'DATA',
     title: 'Database design',
-    detail: 'Relational design and normalization, migrations, constraints, transactions, query optimization, legacy database integration and data migration.',
+    detail:
+      'Relational design and normalization, migrations, constraints, transactions, query optimization, legacy database integration and data migration.',
   },
   {
     label: 'API',
     title: 'System integration',
-    detail: 'OAuth 2.0, bearer tokens, API keys, IP allowlisting, SFTP and file-based batch integrations, XML processing, third-party accounting systems.',
+    detail:
+      'OAuth 2.0, bearer tokens, API keys, IP allowlisting, SFTP and file-based batch integrations, XML processing, third-party accounting systems.',
   },
   {
     label: 'INFRA',
     title: 'Deployment & servers',
-    detail: 'Ubuntu VPS administration, Nginx and Apache, PHP-FPM, SSL via Certbot, DNS, UFW, Fail2ban, Git-based deployment and CI workflows.',
+    detail:
+      'Ubuntu VPS administration, Nginx and Apache, PHP-FPM, SSL via Certbot, DNS, UFW, Fail2ban, Git-based deployment and CI workflows.',
   },
 ]
 
@@ -264,6 +305,7 @@ function toggleTheme() {
 onMounted(() => {
   darkMode.value = localStorage.getItem('portfolio-theme') === 'dark'
   loadContributions()
+  loadVisitorAnalytics()
 })
 </script>
 
@@ -274,16 +316,18 @@ onMounted(() => {
     <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="brand">
         <div class="brand-mark">LG</div>
-        <div class="brand-name">
-          <strong>Lloyd Golez</strong><span>Software Engineer</span>
-        </div>
+        <div class="brand-name"><strong>Lloyd Golez</strong><span>Software Engineer</span></div>
         <button class="close-menu" aria-label="Close menu" @click="sidebarOpen = false">×</button>
       </div>
 
       <p class="nav-label">SECTIONS</p>
       <nav>
-        <button v-for="item in navItems" :key="item.id" :class="{ active: activeView === item.id }"
-          @click="selectView(item.id)">
+        <button
+          v-for="item in navItems"
+          :key="item.id"
+          :class="{ active: activeView === item.id }"
+          @click="selectView(item.id)"
+        >
           <svg v-if="item.icon === 'grid'" viewBox="0 0 24 24">
             <rect x="3" y="3" width="7" height="7" />
             <rect x="14" y="3" width="7" height="7" />
@@ -306,13 +350,17 @@ onMounted(() => {
       </nav>
 
       <div class="sidebar-bottom">
-
         <a class="sidebar-cta" href="mailto:golez.sf@gmail.com">
           <span>CONTACT</span><span>golez.sf@gmail.com</span>
         </a>
         <div class="socials">
           <a href="https://github.com/vanilla-cheesecake" target="_blank" rel="noopener">GITHUB</a>
-          <a href="https://www.linkedin.com/in/lloyd-golez-301389169/" target="_blank" rel="noopener">LINKEDIN</a>
+          <a
+            href="https://www.linkedin.com/in/lloyd-golez-301389169/"
+            target="_blank"
+            rel="noopener"
+            >LINKEDIN</a
+          >
         </div>
       </div>
     </aside>
@@ -348,16 +396,19 @@ onMounted(() => {
                   <g fill="#fcd116">
                     <circle cx="3.464" cy="6" r="1.35" />
                     <path
-                      d="M4.781 5.705L6.214 6L4.781 6.295ZM4.604 6.723L5.409 7.945L4.187 7.14ZM3.759 7.317L3.464 8.75L3.169 7.317ZM2.741 7.14L1.519 7.945L2.324 6.723ZM2.147 6.295L0.714 6L2.147 5.705ZM2.324 5.277L1.519 4.055L2.741 4.86ZM3.169 4.683L3.464 3.25L3.759 4.683ZM4.187 4.86L5.409 4.055L4.604 5.277Z" />
+                      d="M4.781 5.705L6.214 6L4.781 6.295ZM4.604 6.723L5.409 7.945L4.187 7.14ZM3.759 7.317L3.464 8.75L3.169 7.317ZM2.741 7.14L1.519 7.945L2.324 6.723ZM2.147 6.295L0.714 6L2.147 5.705ZM2.324 5.277L1.519 4.055L2.741 4.86ZM3.169 4.683L3.464 3.25L3.759 4.683ZM4.187 4.86L5.409 4.055L4.604 5.277Z"
+                    />
                     <path
-                      d="M1.9 1.05L2.1 1.625L2.708 1.637L2.223 2.005L2.4 2.588L1.9 2.24L1.4 2.588L1.577 2.005L1.092 1.637L1.7 1.625ZM1.9 9.25L2.1 9.825L2.708 9.837L2.223 10.205L2.4 10.788L1.9 10.44L1.4 10.788L1.577 10.205L1.092 9.837L1.7 9.825ZM8.192 5.15L8.392 5.725L9 5.737L8.515 6.105L8.692 6.688L8.192 6.34L7.692 6.688L7.869 6.105L7.384 5.737L7.992 5.725Z" />
+                      d="M1.9 1.05L2.1 1.625L2.708 1.637L2.223 2.005L2.4 2.588L1.9 2.24L1.4 2.588L1.577 2.005L1.092 1.637L1.7 1.625ZM1.9 9.25L2.1 9.825L2.708 9.837L2.223 10.205L2.4 10.788L1.9 10.44L1.4 10.788L1.577 10.205L1.092 9.837L1.7 9.825ZM8.192 5.15L8.392 5.725L9 5.737L8.515 6.105L8.692 6.688L8.192 6.34L7.692 6.688L7.869 6.105L7.384 5.737L7.992 5.725Z"
+                    />
                   </g>
                 </svg>
               </h1>
               <p class="lead">
-                I'm a software engineer building web, mobile, and desktop applications. I primarily work with Laravel
-                and PHP, alongside Vue, Livewire, MySQL, SQL Server, Kotlin, C#, and VB.NET. My work spans backend
-                development, APIs, databases, user interfaces, system integrations, and application deployment.
+                I'm a software engineer building web, mobile, and desktop applications. I primarily
+                work with Laravel and PHP, alongside Vue, Livewire, MySQL, SQL Server, Kotlin, C#,
+                and VB.NET. My work spans backend development, APIs, databases, user interfaces,
+                system integrations, and application deployment.
               </p>
               <div class="hero-actions">
                 <button @click="selectView('experience')">EXPERIENCE</button>
@@ -369,59 +420,135 @@ onMounted(() => {
             </div>
 
             <figure class="hero-banner">
-              <img src="/img/banner.avif" width="1413" height="766" alt="Lloyd Golez playing guitar" loading="lazy"
-                decoding="async" />
+              <img
+                src="/img/banner.avif"
+                width="1413"
+                height="766"
+                alt="Lloyd Golez playing guitar"
+                loading="lazy"
+                decoding="async"
+              />
             </figure>
           </section>
 
-          <section class="contrib-panel">
-            <div class="panel-head">
-              <span>GITHUB ACTIVITY</span>
-              <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
-                @{{ githubUser }} ↗
-              </a>
-            </div>
-
-            <div v-if="contribState === 'ready'" class="contrib-scroll">
-              <div class="contrib-chart">
-                <div class="contrib-months">
-                  <span v-for="month in contribMonths" :key="month.week"
-                    :style="{ gridColumn: `${month.week + 1} / span ${month.span}` }">{{ month.label }}</span>
-                </div>
-                <div class="contrib-grid">
-                  <span v-for="(day, index) in contribDays" :key="day ? day.date : `pad-${index}`" class="cell"
-                    :class="day ? `level-${day.level}` : 'empty'"
-                    :title="day ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}` : ''"></span>
-                </div>
-              </div>
-            </div>
-
-            <div v-else class="contrib-message">
-              <span v-if="contribState === 'loading'">Loading contribution data…</span>
-              <span v-else>
-                Contribution data unavailable —
+          <div class="overview-analytics">
+            <section class="contrib-panel">
+              <div class="panel-head">
+                <span>GITHUB ACTIVITY</span>
                 <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
-                  view it on GitHub ↗
+                  @{{ githubUser }} ↗
                 </a>
-              </span>
-            </div>
-
-            <div class="panel-foot">
-              <span v-if="contribState === 'ready'">
-                {{ contribTotal.toLocaleString() }} contributions in the last year
-              </span>
-              <span v-else></span>
-              <div class="contrib-legend">
-                <span>LESS</span>
-                <i class="cell level-0"></i>
-                <i class="cell level-1"></i>
-                <i class="cell level-2"></i>
-                <i class="cell level-3"></i>
-                <i class="cell level-4"></i>
-                <span>MORE</span>
               </div>
-            </div>
-          </section>
+
+              <div v-if="contribState === 'ready'" class="contrib-scroll">
+                <div class="contrib-chart">
+                  <div class="contrib-months">
+                    <span
+                      v-for="month in contribMonths"
+                      :key="month.week"
+                      :style="{ gridColumn: `${month.week + 1} / span ${month.span}` }"
+                      >{{ month.label }}</span
+                    >
+                  </div>
+                  <div class="contrib-grid">
+                    <span
+                      v-for="(day, index) in contribDays"
+                      :key="day ? day.date : `pad-${index}`"
+                      class="cell"
+                      :class="day ? `level-${day.level}` : 'empty'"
+                      :title="
+                        day
+                          ? `${day.count} contribution${day.count === 1 ? '' : 's'} on ${formatDate(day.date)}`
+                          : ''
+                      "
+                    ></span>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else class="contrib-message">
+                <span v-if="contribState === 'loading'">Loading contribution data…</span>
+                <span v-else>
+                  Contribution data unavailable —
+                  <a :href="`https://github.com/${githubUser}`" target="_blank" rel="noopener">
+                    view it on GitHub ↗
+                  </a>
+                </span>
+              </div>
+
+              <div class="panel-foot">
+                <span v-if="contribState === 'ready'">
+                  {{ contribTotal.toLocaleString() }} contributions in the last year
+                </span>
+                <span v-else></span>
+                <div class="contrib-legend">
+                  <span>LESS</span>
+                  <i class="cell level-0"></i>
+                  <i class="cell level-1"></i>
+                  <i class="cell level-2"></i>
+                  <i class="cell level-3"></i>
+                  <i class="cell level-4"></i>
+                  <span>MORE</span>
+                </div>
+              </div>
+            </section>
+
+            <aside class="visitor-panel" aria-labelledby="visitor-title">
+              <div class="panel-head">
+                <span id="visitor-title">VISITORS</span>
+                <span class="visitor-status" :class="{ live: visitorAnalyticsState === 'live' }">
+                  {{
+                    visitorAnalyticsState === 'live'
+                      ? 'LIVE'
+                      : visitorAnalyticsState === 'loading'
+                        ? 'LOADING'
+                        : 'OFFLINE'
+                  }}
+                </span>
+              </div>
+
+              <div v-if="visitorAnalyticsState === 'live'" class="visitor-total">
+                <span>ALL-TIME VISITS</span>
+                <strong>{{ visitorAnalytics.total.toLocaleString() }}</strong>
+                <small>Unique browser visits</small>
+              </div>
+
+              <div v-if="visitorAnalyticsState === 'live'" class="country-list">
+                <p>VISITORS BY COUNTRY</p>
+                <div
+                  v-for="country in visitorAnalytics.countries"
+                  :key="country.code"
+                  class="country-row"
+                >
+                  <div class="country-meta">
+                    <span class="country-flag">
+                      <img
+                        :src="`/flags/${country.code.toLowerCase()}.svg`"
+                        width="20"
+                        height="14"
+                        :alt="`${country.name} flag`"
+                      />
+                    </span>
+                    <span>{{ country.name }}</span>
+                    <strong>{{ country.visits.toLocaleString() }}</strong>
+                  </div>
+                  <div class="country-track" aria-hidden="true">
+                    <i :style="{ width: `${(country.visits / topVisitorCount) * 100}%` }"></i>
+                  </div>
+                </div>
+                <span v-if="!visitorAnalytics.countries.length" class="visitor-empty">
+                  No country data yet.
+                </span>
+              </div>
+              <div v-else class="visitor-message">
+                {{
+                  visitorAnalyticsState === 'loading'
+                    ? 'Loading visitor analytics…'
+                    : 'Visitor analytics unavailable.'
+                }}
+              </div>
+            </aside>
+          </div>
 
           <!-- <section class="stats">
             <div v-for="([value, label], index) in stats" :key="label">
@@ -454,15 +581,15 @@ onMounted(() => {
                 <h2>Software Engineer</h2>
 
                 <p>
-                  Develop and maintain business applications across accounting, HRIS, payroll,
-                  point of sale, invoicing, reporting, API integrations, desktop utilities,
-                  and Android applications.
+                  Develop and maintain business applications across accounting, HRIS, payroll, point
+                  of sale, invoicing, reporting, API integrations, desktop utilities, and Android
+                  applications.
                 </p>
 
                 <ul>
                   <li>
-                    Build full-stack web applications using Laravel, Livewire, Vue.js,
-                    JavaScript, TypeScript, and Tailwind CSS.
+                    Build full-stack web applications using Laravel, Livewire, Vue.js, JavaScript,
+                    TypeScript, and Tailwind CSS.
                   </li>
 
                   <li>
@@ -472,40 +599,40 @@ onMounted(() => {
 
                   <li>
                     Develop accounting modules including invoices, payments, journal entries,
-                    general ledger, trial balance, accounts payable, accounts receivable,
-                    credit memos, and audit trails.
+                    general ledger, trial balance, accounts payable, accounts receivable, credit
+                    memos, and audit trails.
                   </li>
 
                   <li>
-                    Develop HRIS and payroll features including employee management,
-                    attendance, shifts, overtime, leave management, payroll processing,
-                    loans, deductions, and reporting.
+                    Develop HRIS and payroll features including employee management, attendance,
+                    shifts, overtime, leave management, payroll processing, loans, deductions, and
+                    reporting.
                   </li>
 
                   <li>
-                    Build REST APIs and external system integrations using OAuth 2.0,
-                    bearer tokens, API keys, JSON, XML, SFTP, and file-based batch processing.
+                    Build REST APIs and external system integrations using OAuth 2.0, bearer tokens,
+                    API keys, JSON, XML, SFTP, and file-based batch processing.
                   </li>
 
                   <li>
-                    Develop Windows desktop applications and accounting utilities using
-                    C#, VB.NET, .NET, SQL Server, and QuickBooks Desktop QBSDK.
+                    Develop Windows desktop applications and accounting utilities using C#, VB.NET,
+                    .NET, SQL Server, and QuickBooks Desktop QBSDK.
                   </li>
 
                   <li>
-                    Develop native Android applications using Kotlin and Jetpack Compose,
-                    integrated with Laravel-based backend APIs.
+                    Develop native Android applications using Kotlin and Jetpack Compose, integrated
+                    with Laravel-based backend APIs.
                   </li>
 
                   <li>
-                    Deploy and maintain applications on Ubuntu Linux servers, including
-                    Apache, PHP-FPM, SSL/TLS, DNS, SSH, SFTP, firewall rules, permissions,
-                    and production environment configuration.
+                    Deploy and maintain applications on Ubuntu Linux servers, including Apache,
+                    PHP-FPM, SSL/TLS, DNS, SSH, SFTP, firewall rules, permissions, and production
+                    environment configuration.
                   </li>
 
                   <li>
-                    Manage application releases, Git workflows, staging and production
-                    environments, database migrations, and CI workflows using GitHub Actions.
+                    Manage application releases, Git workflows, staging and production environments,
+                    database migrations, and CI workflows using GitHub Actions.
                   </li>
                 </ul>
 
@@ -538,13 +665,13 @@ onMounted(() => {
 
                 <ul>
                   <li>
-                    Supported users, computers, software, networks, and administrative systems
-                    while helping maintain reliable day-to-day campus IT operations.
+                    Supported users, computers, software, networks, and administrative systems while
+                    helping maintain reliable day-to-day campus IT operations.
                   </li>
 
                   <li>
-                    Assisted with system setup, troubleshooting, data handling, documentation,
-                    and general technical support.
+                    Assisted with system setup, troubleshooting, data handling, documentation, and
+                    general technical support.
                   </li>
                 </ul>
 
@@ -597,9 +724,7 @@ onMounted(() => {
           <section class="page-heading">
             <p class="kicker">TECH STACK</p>
             <h1>Tools and technologies</h1>
-            <p>
-              The technologies I work with.
-            </p>
+            <p>The technologies I work with.</p>
           </section>
           <section class="tech-section">
             <div v-for="group in techGroups" :key="group.name" class="tech-group">
@@ -614,7 +739,6 @@ onMounted(() => {
               </div>
             </div>
           </section>
-
         </template>
 
         <template v-else>
@@ -622,8 +746,9 @@ onMounted(() => {
             <p class="kicker">ABOUT</p>
             <h1>ABOUT ME</h1>
             <p>
-              I’m a software engineer with experience in web, mobile, and desktop development. I work primarily with
-              Laravel and PHP, alongside Vue, Livewire, Kotlin, C#, VB.NET, MySQL, and SQL Server.
+              I’m a software engineer with experience in web, mobile, and desktop development. I
+              work primarily with Laravel and PHP, alongside Vue, Livewire, Kotlin, C#, VB.NET,
+              MySQL, and SQL Server.
             </p>
           </section>
           <section class="about-panel">
@@ -633,12 +758,12 @@ onMounted(() => {
             </div>
             <div>
               <p>
-                I handle projects from requirements and database design through development, integration, deployment,
-                and maintenance.
+                I handle projects from requirements and database design through development,
+                integration, deployment, and maintenance.
               </p>
               <p>
-                My work spans web, backend, desktop, and Android applications, with a focus on reliable business
-                software.
+                My work spans web, backend, desktop, and Android applications, with a focus on
+                reliable business software.
               </p>
               <a class="text-link" href="mailto:golez.sf@gmail.com">golez.sf@gmail.com →</a>
             </div>
@@ -647,7 +772,13 @@ onMounted(() => {
           <section class="social-section">
             <p class="kicker">ELSEWHERE</p>
             <div class="social-grid">
-              <a v-for="social in socialLinks" :key="social.name" :href="social.url" target="_blank" rel="noopener">
+              <a
+                v-for="social in socialLinks"
+                :key="social.name"
+                :href="social.url"
+                target="_blank"
+                rel="noopener"
+              >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path :d="socialPath(social.icon)" />
                 </svg>
@@ -1038,10 +1169,12 @@ h3 {
   width: 150%;
   height: auto;
   /* Two axis gradients intersected so all four edges fade out evenly. */
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%),
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
   -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%),
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%),
     linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%);
   mask-composite: intersect;
 }
@@ -1085,10 +1218,18 @@ h3 {
 
 /* ---------- github contributions ---------- */
 
+.overview-analytics {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 16px;
+  align-items: stretch;
+  margin-bottom: 48px;
+}
+
 .contrib-panel {
   border: 1px solid var(--line);
   background: var(--panel);
-  margin-bottom: 48px;
+  min-width: 0;
 }
 
 .panel-head,
@@ -1208,6 +1349,114 @@ h3 {
   border-bottom: 1px solid var(--line);
 }
 
+/* ---------- visitor analytics ---------- */
+
+.visitor-panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.visitor-status {
+  padding: 3px 5px;
+  border: 1px solid var(--line);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.visitor-status.live {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.visitor-message {
+  grid-column: 1 / -1;
+  padding: 28px 14px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.visitor-empty {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.visitor-total {
+  padding: 18px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.visitor-total span,
+.visitor-total small,
+.country-list > p {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+}
+
+.visitor-total strong {
+  display: block;
+  margin: 7px 0 5px;
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.visitor-total small {
+  letter-spacing: 0.03em;
+}
+
+.country-list {
+  padding: 14px;
+}
+
+.country-list > p {
+  margin: 0 0 14px;
+}
+
+.country-row + .country-row {
+  margin-top: 13px;
+}
+
+.country-meta {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+
+.country-flag {
+  display: flex;
+  align-items: center;
+}
+
+.country-flag img {
+  display: block;
+  width: 20px;
+  height: 14px;
+  border: 1px solid var(--line);
+  object-fit: cover;
+}
+
+.country-meta strong {
+  font-weight: 500;
+}
+
+.country-track {
+  height: 3px;
+  margin-left: 33px;
+  background: var(--line-soft);
+}
+
+.country-track i {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+
 /* ---------- stats ---------- */
 
 .stats {
@@ -1217,13 +1466,13 @@ h3 {
   border-bottom: 1px solid var(--line);
 }
 
-.stats>div {
+.stats > div {
   position: relative;
   padding: 24px 20px;
   border-right: 1px solid var(--line);
 }
 
-.stats>div:last-child {
+.stats > div:last-child {
   border-right: 0;
 }
 
@@ -1364,7 +1613,7 @@ h3 {
   border-bottom: 1px solid var(--line);
 }
 
-.page-heading>p:last-child {
+.page-heading > p:last-child {
   max-width: 620px;
   margin: 18px 0 0;
   font-size: 13px;
@@ -1384,7 +1633,7 @@ h3 {
   gap: 32px;
 }
 
-.timeline article+article {
+.timeline article + article {
   margin-top: 44px;
 }
 
@@ -1411,7 +1660,7 @@ h3 {
   margin-bottom: 14px;
 }
 
-.timeline-body>p {
+.timeline-body > p {
   max-width: 720px;
   font-size: 13px;
   line-height: 1.8;
@@ -1449,7 +1698,7 @@ h3 {
   padding: 40px 0 80px;
 }
 
-.tech-group+.tech-group {
+.tech-group + .tech-group {
   margin-top: 32px;
 }
 
@@ -1590,6 +1839,24 @@ footer {
 /* ---------- responsive ---------- */
 
 @media (max-width: 1100px) {
+  .overview-analytics {
+    grid-template-columns: 1fr;
+  }
+
+  .visitor-panel {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+  }
+
+  .visitor-panel .panel-head {
+    grid-column: 1 / -1;
+  }
+
+  .visitor-total {
+    border-right: 1px solid var(--line);
+    border-bottom: 0;
+  }
+
   .capability-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1660,6 +1927,14 @@ footer {
 }
 
 @media (max-width: 680px) {
+  .visitor-panel {
+    display: block;
+  }
+
+  .visitor-total {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
 
   .content,
   .topbar {
@@ -1679,11 +1954,11 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
-  .stats>div:nth-child(2n) {
+  .stats > div:nth-child(2n) {
     border-right: 0;
   }
 
-  .stats>div:nth-child(-n + 2) {
+  .stats > div:nth-child(-n + 2) {
     border-bottom: 1px solid var(--line);
   }
 
