@@ -349,7 +349,33 @@ function toggleTheme() {
   localStorage.setItem('portfolio-theme', darkMode.value ? 'dark' : 'light')
 }
 
+function logConsoleEasterEgg() {
+  console.log(
+    [
+      '%cLLOYD GOLEZ',
+      '%cSoftware Engineer · Philippines',
+      '',
+      '%cHey 👋',
+      '%cThanks for looking under the hood.',
+      '',
+      '%cBuilt with Vue, Netlify, and an unreasonable amount of CSS.',
+      '',
+      '%cGitHub: @vanilla-cheesecake',
+      '',
+      '%cNo secrets here. Nice try.',
+    ].join('\n'),
+    'font: 700 20px/1.5 monospace; color: #5fa96d;',
+    'font: 12px/1.5 monospace; color: #8c8c8c;',
+    'font: 700 13px/1.6 monospace; color: #ededed;',
+    'font: 12px/1.6 monospace; color: #ededed;',
+    'font: 12px/1.6 monospace; color: #8c8c8c;',
+    'font: 12px/1.6 monospace; color: #5fa96d;',
+    'font: 700 12px/1.6 monospace; color: #ededed;',
+  )
+}
+
 onMounted(() => {
+  logConsoleEasterEgg()
   const savedTheme = localStorage.getItem('portfolio-theme')
   if (savedTheme) darkMode.value = savedTheme === 'dark'
   loadContributions()
