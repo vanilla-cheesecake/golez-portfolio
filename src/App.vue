@@ -8,6 +8,14 @@ const router = useRouter()
 const activeView = ref(route.name || 'overview')
 const sidebarOpen = ref(false)
 const darkMode = ref(true)
+const scrollTrack = ref(null)
+const scrollThumbTop = ref(0)
+const scrollThumbHeight = ref(48)
+const scrollProgress = ref(0)
+const pageIsScrollable = ref(false)
+let scrollResizeObserver
+let dragStartY = 0
+let dragStartScroll = 0
 
 const navItems = [
   { id: 'overview', label: 'Overview', icon: 'grid', path: '/' },
@@ -92,6 +100,65 @@ function scheduleVisitorCount() {
 
 function handleVisibilityChange() {
   scheduleVisitorCount()
+}
+
+function updateCustomScrollbar() {
+  const viewportHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  const maxScroll = Math.max(0, documentHeight - viewportHeight)
+  const trackHeight = scrollTrack.value?.clientHeight || 0
+
+  pageIsScrollable.value = maxScroll > 1
+  scrollProgress.value = maxScroll ? Math.min(1, Math.max(0, window.scrollY / maxScroll)) : 0
+  scrollThumbHeight.value = Math.max(48, trackHeight * (viewportHeight / documentHeight))
+  scrollThumbTop.value = scrollProgress.value * Math.max(0, trackHeight - scrollThumbHeight.value)
+}
+
+function scrollFromTrack(event) {
+  if (event.target !== scrollTrack.value) return
+
+  const rect = scrollTrack.value.getBoundingClientRect()
+  const ratio = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height))
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+  window.scrollTo({ top: ratio * maxScroll, behavior: 'smooth' })
+}
+
+function dragScrollThumb(event) {
+  const trackHeight = scrollTrack.value?.clientHeight || 1
+  const movableDistance = Math.max(1, trackHeight - scrollThumbHeight.value)
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+  const nextScroll = dragStartScroll + ((event.clientY - dragStartY) / movableDistance) * maxScroll
+  window.scrollTo({ top: nextScroll })
+}
+
+function stopDraggingThumb() {
+  window.removeEventListener('pointermove', dragScrollThumb)
+  window.removeEventListener('pointerup', stopDraggingThumb)
+}
+
+function startDraggingThumb(event) {
+  event.preventDefault()
+  dragStartY = event.clientY
+  dragStartScroll = window.scrollY
+  window.addEventListener('pointermove', dragScrollThumb)
+  window.addEventListener('pointerup', stopDraggingThumb, { once: true })
+}
+
+function handleScrollbarKeydown(event) {
+  const movements = {
+    ArrowUp: -40,
+    ArrowDown: 40,
+    PageUp: -window.innerHeight * 0.8,
+    PageDown: window.innerHeight * 0.8,
+  }
+
+  if (event.key === 'Home' || event.key === 'End') {
+    event.preventDefault()
+    window.scrollTo({ top: event.key === 'Home' ? 0 : document.documentElement.scrollHeight })
+  } else if (movements[event.key]) {
+    event.preventDefault()
+    window.scrollBy({ top: movements[event.key], behavior: 'smooth' })
+  }
 }
 
 const MONTH_NAMES = [
@@ -406,17 +473,47 @@ onMounted(() => {
   loadVisitorAnalytics()
   document.addEventListener('visibilitychange', handleVisibilityChange)
   scheduleVisitorCount()
+  window.addEventListener('scroll', updateCustomScrollbar, { passive: true })
+  window.addEventListener('resize', updateCustomScrollbar)
+  scrollResizeObserver = new ResizeObserver(updateCustomScrollbar)
+  scrollResizeObserver.observe(document.body)
+  requestAnimationFrame(updateCustomScrollbar)
 })
 
 onBeforeUnmount(() => {
   clearTimeout(visitorCountTimer)
   document.removeEventListener('visibilitychange', handleVisibilityChange)
+  window.removeEventListener('scroll', updateCustomScrollbar)
+  window.removeEventListener('resize', updateCustomScrollbar)
+  stopDraggingThumb()
+  scrollResizeObserver?.disconnect()
 })
 </script>
 
 <template>
   <div class="app-shell" :class="{ dark: darkMode }">
     <div v-if="sidebarOpen" class="overlay" @click="sidebarOpen = false"></div>
+
+    <div
+      v-show="pageIsScrollable"
+      ref="scrollTrack"
+      class="custom-scrollbar"
+      role="scrollbar"
+      aria-label="Page scroll position"
+      aria-orientation="vertical"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      :aria-valuenow="Math.round(scrollProgress * 100)"
+      tabindex="0"
+      @pointerdown="scrollFromTrack"
+      @keydown="handleScrollbarKeydown"
+    >
+      <span
+        class="custom-scrollbar-thumb"
+        :style="{ height: `${scrollThumbHeight}px`, transform: `translateY(${scrollThumbTop}px)` }"
+        @pointerdown="startDraggingThumb"
+      ></span>
+    </div>
 
     <aside class="sidebar" :class="{ open: sidebarOpen }">
       <div class="brand">
@@ -919,6 +1016,11 @@ onBeforeUnmount(() => {
   scroll-behavior: smooth;
   overflow-x: clip;
   background: #0d0d0d;
+  scrollbar-width: none;
+}
+
+:global(html::-webkit-scrollbar) {
+  display: none;
 }
 
 :global(body) {
@@ -971,6 +1073,57 @@ onBeforeUnmount(() => {
   --line-soft: #202020;
   --accent: #ededed;
   --ok: #5fa96d;
+}
+
+/* ---------- custom page scrollbar ---------- */
+
+.custom-scrollbar {
+  position: fixed;
+  top: 76px;
+  right: 18px;
+  bottom: 20px;
+  z-index: 25;
+  width: 10px;
+  padding: 0 3px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.custom-scrollbar::before {
+  content: '';
+  position: absolute;
+  inset: 0 4px;
+  background: var(--line-soft);
+}
+
+.custom-scrollbar-thumb {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 4px;
+  min-height: 48px;
+  background: var(--muted);
+  cursor: grab;
+  transition:
+    width 0.15s,
+    background 0.15s;
+}
+
+.custom-scrollbar:hover .custom-scrollbar-thumb,
+.custom-scrollbar:focus-visible .custom-scrollbar-thumb {
+  width: 6px;
+  margin-left: -1px;
+  background: var(--ink);
+}
+
+.custom-scrollbar-thumb:active {
+  cursor: grabbing;
+}
+
+.custom-scrollbar:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
 }
 
 /* ---------- sidebar ---------- */
@@ -2050,6 +2203,10 @@ footer {
 }
 
 @media (max-width: 680px) {
+  .custom-scrollbar {
+    right: 8px;
+  }
+
   .app-shell,
   main,
   .content,
