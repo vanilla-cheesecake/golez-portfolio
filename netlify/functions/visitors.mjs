@@ -15,31 +15,65 @@ async function redis(commands, endpoint = 'pipeline') {
   const url = process.env.UPSTASH_REDIS_REST_URL
   const token = process.env.UPSTASH_REDIS_REST_TOKEN
 
-  if (!url || !token) throw new Error('Upstash REST environment variables are not configured')
+  if (!url) {
+    throw new Error('UPSTASH_REDIS_REST_URL is missing')
+  }
 
-  const response = await fetch(`${url.replace(/\/$/, '')}/${endpoint}`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${token}`,
-      'content-type': 'application/json',
+  if (!token) {
+    throw new Error('UPSTASH_REDIS_REST_TOKEN is missing')
+  }
+
+  const response = await fetch(
+    `${url.replace(/\/$/, '')}/${endpoint}`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(commands),
     },
-    body: JSON.stringify(commands),
-  })
+  )
 
-  if (!response.ok) throw new Error(`Upstash returned HTTP ${response.status}`)
+  const result = await response.json()
 
-  const results = await response.json()
-  const failed = results.find((item) => item.error)
-  if (failed) throw new Error(failed.error)
+  if (!response.ok) {
+    throw new Error(
+      `Upstash HTTP ${response.status}: ${
+        result?.error ?? JSON.stringify(result)
+      }`
+    )
+  }
 
-  return results.map((item) => item.result)
+  // /multi-exec may return a single error object
+  if (!Array.isArray(result)) {
+    if (result?.error) {
+      throw new Error(`Upstash: ${result.error}`)
+    }
+
+    throw new Error(
+      `Unexpected Upstash response: ${JSON.stringify(result)}`
+    )
+  }
+
+  const failed = result.find((item) => item?.error)
+
+  if (failed) {
+    throw new Error(`Upstash: ${failed.error}`)
+  }
+
+  return result.map((item) => item.result)
 }
 
 function countryName(code) {
   if (code === 'XX') return 'Unknown'
 
   try {
-    return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code
+    return (
+      new Intl.DisplayNames(['en'], {
+        type: 'region',
+      }).of(code) || code
+    )
   } catch {
     return code
   }
@@ -48,29 +82,37 @@ function countryName(code) {
 function shapeAnalytics(total, countryHash) {
   const countries = []
 
-  for (let index = 0; index < countryHash.length; index += 2) {
-    const code = countryHash[index]
+  for (let i = 0; i < (countryHash?.length ?? 0); i += 2) {
+    const code = countryHash[i]
+
     countries.push({
       code,
       name: countryName(code),
-      visits: Number(countryHash[index + 1]),
+      visits: Number(countryHash[i + 1] ?? 0),
     })
   }
 
   countries.sort((a, b) => b.visits - a.visits)
 
   return {
-    total: Number(total || 0),
+    total: Number(total ?? 0),
     countries: countries.slice(0, 6),
   }
 }
 
 export default async (request, context) => {
-  if (!['GET', 'POST'].includes(request.method)) return json({ error: 'Method not allowed' }, 405)
+  if (!['GET', 'POST'].includes(request.method)) {
+    return json(
+      { error: 'Method not allowed' },
+      405
+    )
+  }
 
   try {
     if (request.method === 'POST') {
-      const countryCode = context.geo?.country?.code?.toUpperCase() || 'XX'
+      const countryCode =
+        context.geo?.country?.code?.toUpperCase() || 'XX'
+
       const [total, , countries] = await redis(
         [
           ['INCR', TOTAL_KEY],
@@ -80,7 +122,9 @@ export default async (request, context) => {
         'multi-exec',
       )
 
-      return json(shapeAnalytics(total, countries))
+      return json(
+        shapeAnalytics(total, countries)
+      )
     }
 
     const [total, countries] = await redis([
@@ -88,10 +132,18 @@ export default async (request, context) => {
       ['HGETALL', COUNTRY_KEY],
     ])
 
-    return json(shapeAnalytics(total, countries))
+    return json(
+      shapeAnalytics(total, countries)
+    )
   } catch (error) {
     console.error('Visitor analytics failed:', error)
-    return json({ error: 'Visitor analytics unavailable' }, 503)
+
+    return json(
+      {
+        error: 'Visitor analytics unavailable',
+      },
+      503,
+    )
   }
 }
 
